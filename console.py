@@ -127,18 +127,17 @@ class HBNBCommand(cmd.Cmd):
 
         args_list = {}
 
-        if len(split_args) > 1:
-            for arg in range(1, len(split_args)):
-                key, val = tuple(split_args[arg].split('='))
-                if val[0] == '=':
-                    val = val.strip('=').replace('=', ' ')
-                else:
-                    try:
-                        val = eval(val)
-                    except (SyntaxError, NameError):
-                        continue
+        for arg in range(1, len(split_args)):
+            key, val = tuple(split_args[arg].split('='))
+            if val[0] == '=':
+                val = val.strip('=').replace('=', ' ')
+            else:
+                try:
+                    val = eval(val)
+                except (SyntaxError, NameError):
+                    continue
 
-            args_list[key] = val
+        args_list[key] = val
 
         new_obj = HBNBCommand.classes[split_args[0]]()
         new_obj.__dict__.update(args_list)
