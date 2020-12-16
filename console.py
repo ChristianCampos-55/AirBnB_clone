@@ -131,7 +131,7 @@ class HBNBCommand(cmd.Cmd):
             for arg in range(1, len(split_args)):
                 key, val = tuple(split_args[arg].split('='))
                 if val[0] == '=':
-                    val = val.strip('=').replace('=', ' ')
+                    val = val.strip('"').replace('_', ' ')
                 else:
                     try:
                         val = eval(val)
