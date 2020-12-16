@@ -130,13 +130,10 @@ class HBNBCommand(cmd.Cmd):
         if len(split_args) > 1:
             for arg in range(1, len(split_args)):
                 key, val = tuple(split_args[arg].split('='))
-                if val[0] == '=':
+                if val[0] == '"':
                     val = val.strip('"').replace('_', ' ')
                 else:
-                    try:
-                        val = eval(val)
-                    except (SyntaxError, NameError):
-                        continue
+                    val = eval(val)
 
             args_list[key] = val
 
