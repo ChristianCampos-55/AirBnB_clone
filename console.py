@@ -125,24 +125,17 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
 
-        args_list = {}
-
+        new_obj = HBNBCommand.classes[elements[0]]():
         for arg in range(1, len(split_args)):
             key, val = tuple(split_args[arg].split('='))
-            if val[0] == '=':
-                val = val.strip('=').replace('=', ' ')
+            val = val.replace('_', ' ')
+            if val[0] == '"':
+                val = val.strip('"')
             else:
-                try:
-                    val = eval(val)
-                except (SyntaxError, NameError):
-                    continue
+                val = eval(val)
+            setattr(new_obj, key, val)
 
-        args_list[key] = val
-
-        new_obj = HBNBCommand.classes[split_args[0]]()
-        new_obj.__dict__.update(args_list)
-        storage.new(new_obj)
-        storage.save()
+        new_obj.save()
         print(new_obj.id)
 
     def help_create(self):
