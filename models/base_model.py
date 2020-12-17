@@ -37,7 +37,6 @@ class BaseModel:
 
     def __str__(self):
         """Returns a string representation of the instance"""
-        #cls = (str(type(self)).split('.')[-1]).split('\'')[0]
         return '[{}] ({}) {}'.format(type(self).__name__, self.id, self.__dict__)
 
     def save(self):
