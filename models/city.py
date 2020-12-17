@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 """ City Module for HBNB project """
-
-from os import getenv
+from sqlalchemy import String, Column, ForeignKey
+from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
-from sqlalchemy import Integer, String, Column, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, backref
 
 
 class City(BaseModel, Base):
