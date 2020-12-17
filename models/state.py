@@ -9,15 +9,12 @@ from sqlalchemy import Integer, String, Column, DateTime, ForeignKey
 
 
 class State(BaseModel, Base):
-    """ State class """
-    
+    """ State class """   
     __tablename__ = "states"
     if os.environ.get('HBNB_TYPE_STORAGE') == "db":
         name = Column(String(128), nullable=False)
         cities = relationship("City", cascade="all, delete",
                               backref="my_state")
-    else:
-        name = ""
 
     if os.environ.get('HBNB_TYPE_STORAGE') != "db":
         @property
