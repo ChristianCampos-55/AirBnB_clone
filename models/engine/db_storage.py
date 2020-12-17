@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-"""
-It sakes the database engine
-"""
+"""database engine modified using sqlalchemy"""
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -35,7 +33,7 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """query all objects in a class name"""
+        """query all objects"""
         all_objects = []
         if cls:
             all_objects = self.__session.query(cls).all()
@@ -51,27 +49,27 @@ class DBStorage:
         return(new_dictionary)
 
     def new(self, obj):
-        """add the object to the current database session"""
+        """add  a new object"""
         if obj:
             self.__session.add(obj)
             self.__session.commit()
 
     def save(self):
-        """commit all changes of the current database session"""
+        """commit all changesin open session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """delete from the current database session obj if not None"""
+        """deletes object from current session"""
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
-        """create all tables in the database"""
+        """reloads table"""
         Base.metadata.create_all(self.__engine)
         session = scoped_session(sessionmaker(bind=self.__engine,
                                               expire_on_commit=False))
         self.__session = session()
 
     def close(self):
-        """call remove method of registry"""
+        """closes session"""
         self.__session.close()
