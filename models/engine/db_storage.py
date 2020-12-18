@@ -16,6 +16,7 @@ class DBStorage:
     """DBstorage class"""
     __engine = None
     __session = None
+    classes = [User, Place, State, City, Amenity, Review]
 
     def __init__(self):
         """Constructor for session and connection"""
@@ -25,34 +26,33 @@ class DBStorage:
         database = os.environ.get('HBNB_MYSQL_DB')
         running_environment = os.environ.get('HBNB_ENV')
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
-                                      .format(user, password, host, database),
+                                      .format(user, password,
+                                              host, database),
                                       pool_pre_ping=True)
-        Base.metadata.create_all(self.__engine)
-        Session = sessionmaker(bind=self.__engine)
         if running_environment == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """query all objects"""
-        classes = [User, Place, State, City, Amenity, Review]
-        all_obj = []
+        all_objects = []
         if cls:
-            all_obj = self.__session.query(cls).all()
+            all_objects = self.__session.query(cls).all()
         else:
-            for class_name in classes:
-                query = self.__session.query(class_name).all()
-                for element in query:
-                    all_obj.append(element)
-        new_dict = {}
-        for element in all_obj:
-            new_dict[element.__class__.
+            for class_name in self.classes:
+                objects_list = self.__session.query(class_name).all()
+                for element in objects_list:
+                    all_objects.append(element)
+        new_dictionary = {}
+        for element in all_objects:
+            new_dictionary[element.__class__.
                            __name__ + "." + element.id] = element
-        return(new_dict)
+        return(new_dictionary)
 
     def new(self, obj):
         """add  a new object"""
         if obj:
             self.__session.add(obj)
+            self.__session.commit()
 
     def save(self):
         """commit all changesin open session"""
@@ -62,7 +62,6 @@ class DBStorage:
         """deletes object from current session"""
         if obj:
             self.__session.delete(obj)
-            self.save()
 
     def reload(self):
         """reloads table"""
