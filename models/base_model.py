@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
-
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
@@ -43,7 +42,7 @@ class BaseModel:
         return '[{}] ({}) {}'.format(cls, self.id, self.to_dict())
 
     def save(self):
-        """Updates instance"""
+        """Updates instance and saves it"""
         from models import storage
         self.updated_at = datetime.now()
         storage.new(self)

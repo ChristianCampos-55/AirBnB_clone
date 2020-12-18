@@ -6,7 +6,7 @@ from models.base_model import BaseModel, Base
 
 
 class Amenity(BaseModel, Base):
-    """ amenities """
+    """ class for amenities """
     __tablename__ = "amenities"
     name = Column(String(128), nullable=False)
 
