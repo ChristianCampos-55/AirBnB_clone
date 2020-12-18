@@ -14,9 +14,7 @@ from models.base_model import Base
 
 
 class DBStorage():
-    """
-    New engine DBStorage
-    """
+    """New engine DBStorage"""
     __engine = None
     __session = None
 
