@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 """database engine modified using sqlalchemy"""
-from sqlalchemy import create_engine
-from models.base_model import Base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session
+from sqlalchemy import (create_engine)
 import os
-from models.user import User
-from models.place import Place
+from models.amenity import Amenity
 from models.state import State
 from models.city import City
-from models.amenity import Amenity
 from models.review import Review
+from models.user import User
+from models.place import Place
+from models.base_model import Base
 
 
 class DBStorage:
