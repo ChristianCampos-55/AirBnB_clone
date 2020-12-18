@@ -64,4 +64,4 @@ class BaseModel:
         """Instance method to delete current instance from the storage"""
         from models import storage
         if self in storage.all().values():
-            models.storage.delete(self)
+            storage.delete(self)
