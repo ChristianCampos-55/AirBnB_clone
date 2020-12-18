@@ -8,7 +8,7 @@ import os
 
 @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db", "Doesn't apply for File Storage")
 class TestDataBaseStorage(unittest.TestCase):
-    """test for console and db"""
+    """test for console"""
     def test_db(self):
         """database tests """
         pass
