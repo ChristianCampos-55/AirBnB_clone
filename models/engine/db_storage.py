@@ -37,15 +37,15 @@ class DBStorage:
         if cls:
             all_obj = self.__session.query(cls).all()
         else:
-            for class_name in self.classes:
+            for class_name in classes:
                 query = self.__session.query(class_name).all()
                 for element in query:
                     all_obj.append(element)
         new_dict = {}
-        for instance in all_obj:
+        for element in all_obj:
             new_dict[element.__class__.
-                     __name__ + "." + element.id] = instance
-        return new_dict
+                     __name__ + "." + element.id] = element
+        return(new_dict)
 
     def new(self, obj):
         """add  a new object"""
