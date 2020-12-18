@@ -36,33 +36,26 @@ class Place(BaseModel, Base):
     amenities = relationship("Amenity", secondary="place_amenity",
                              viewonly=False)
 
-    @property
-    def amenities(self):
-        """ getter method for amenities"""
-        amenities_list = []
-        from models import storage
-        dictionary = storage.all(Amenity)
-        if dictionary:
-            for k, v in dictionary.items():
-                if self.id == v.place_id:
-                    amenities_list.append(v)
-        return amenities_list
+    if getenv("HBNB_TYPE_STORAGE", None) != "db":
+        @property
+        def reviews(self):
+            """list of Review."""
+            lista = []
+            for review in list(models.storage.all(Review).values()):
+                if review.place_id == self.id:
+                    lista.append(review)
+            return lista
 
-    @amenities.setter
-    def amenities(self, value):
-        """setter method for amenities"""
-        if type(value) != Amenity:
-            return
-        self.amenity_ids.append(value)
+        @property
+        def amenities(self):
+            """list of Review."""
+            lista = []
+            for review in list(models.storage.all(Amenity).values()):
+                if review.place_id == self.id:
+                    lista.append(review)
+            return lista
 
-    @property
-    def reviews(self):
-        """ getter method for reviews"""
-        reviews_list = []
-        from models import storage
-        dictionary = storage.all(Review)
-        if dictionary:
-            for k, v in dictionary.items():
-                if self.id == v.place_id:
-                    reviews_list.append(v)
-        return reviews_list
+        @amenities.setter
+        def amenities(self, value):
+            if value == Amenity:
+                self.amenity_ids.append(value.id)
