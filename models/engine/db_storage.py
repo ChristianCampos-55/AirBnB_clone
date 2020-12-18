@@ -44,7 +44,7 @@ class DBStorage:
         new_dict = {}
         for element in all_obj:
             new_dict[element.__class__.
-                     __name__ + "." + element.id] = element
+                           __name__ + "." + element.id] = element
         return(new_dict)
 
     def new(self, obj):
