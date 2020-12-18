@@ -13,73 +13,67 @@ from models.place import Place
 from models.base_model import Base
 
 
-class DBStorage():
-    """New engine DBStorage"""
+class DBStorage:
+    """DBstorage class"""
     __engine = None
     __session = None
+    classes = [User, Place, State, City, Amenity, Review]
 
     def __init__(self):
-        """
-        constructor
-        """
-        user = os.getenv("HBNB_MYSQL_USER")
-        pwd = os.getenv("HBNB_MYSQL_PWD")
-        # will be localhost
-        host = os.getenv("HBNB_MYSQL_HOST")
-        db = os.getenv("HBNB_MYSQL_DB")
-        connection = 'mysql+mysqldb://{}:{}@localhost/{}'
-        self.__engine = create_engine(connection.format(
-            user, pwd, db), pool_pre_ping=True)
-        if (os.getenv("HBNB_ENV") == "test"):
+        """Constructor method"""
+        dialect = "mysql"
+        driver = "mysqldb"
+        user = os.environ.get('HBNB_MYSQL_USER')
+        password = os.environ.get('HBNB_MYSQL_PWD')
+        host = os.environ.get('HBNB_MYSQL_HOST')
+        database = os.environ.get('HBNB_MYSQL_DB')
+        running_environment = os.environ.get('HBNB_ENV')
+        self.__engine = create_engine('{}+{}://{}:{}@{}/{}'
+                                      .format(dialect, driver,
+                                              user, password,
+                                              host, database),
+                                      pool_pre_ping=True)
+        if running_environment == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """
-        return the dictionary of cls
-        """
-        dicc = {}
+        """query all objects in a class name"""
+        all_objects = []
         if cls:
-            query = self.__session.query(eval(cls))
-            for clase in query:
-                key = "{}.{}".format(type(clase).__name__, clase.id)
-                dicc[key] = clase
+            all_objects = self.__session.query(cls).all()
         else:
-            lista_clases = [User, State, City, Amenity, Place, Review]
-            for clase in lista_clases:
-                query = self.__session.query(clase)
-                for obj in query:
-                    key = "{}.{}".format(type(obj).__name__, obj.id)
-                    dicc[key] = obj
-        return dicc
+            for class_name in self.classes:
+                objects_list = self.__session.query(class_name).all()
+                for element in objects_list:
+                    all_objects.append(element)
+        new_dictionary = {}
+        for element in all_objects:
+            new_dictionary[element.__class__.
+                           __name__ + "." + element.id] = element
+        return(new_dictionary)
 
     def new(self, obj):
-        """
-        add a new object to db
-        """
-        self.__session.add(obj)
+        """add the object to the current database session"""
+        if obj:
+            self.__session.add(obj)
+            self.__session.commit()
 
     def save(self):
-        """
-        commit  the objetc to db
-        """
+        """commit all changes of the current database session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """
-        delete from the current database session
-        obj if not None
-        """
-        if obj is not None:
+        """delete from the current database session obj if not None"""
+        if obj:
             self.__session.delete(obj)
 
     def reload(self):
-        """
-        create all tables in the database
-        """
-        # create tables into a db
+        """create all tables in the database"""
         Base.metadata.create_all(self.__engine)
-        # creamos el session object
-        # expire_on_commmot = false >>> ignore the query sql
-        session = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session)
-        self.__session = Session()
+        session = scoped_session(sessionmaker(bind=self.__engine,
+                                              expire_on_commit=False))
+        self.__session = session()
+
+    def close(self):
+        """call remove method of registry"""
+        self.__session.close()
