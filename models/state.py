@@ -8,16 +8,18 @@ from sqlalchemy.orm import relationship
 
 
 class State(BaseModel, Base):
-    """ State class """
+    """ State class within the model"""
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
 
     @property
     def cities(self):
-        """getter for cities object"""
-        my_list = []
+        """ getter method for cities"""
+        from models import storage
+        cities_list = []
         dictionary = storage.all(City)
-        for key, value in dictionary.items():
-            if value.state_id == self.id:
-                my_list.append(value)
-        return my_list
+        if dictionary:
+            for k, v in dictionary.items():
+                if self.id == v.state_id:
+                    cities_list.append(v)
+        return cities_list
