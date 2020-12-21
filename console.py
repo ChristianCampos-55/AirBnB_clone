@@ -2,6 +2,8 @@
 """ Console Module """
 import cmd
 import sys
+import shlex
+import models
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -11,6 +13,9 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place,
+           'State': State, 'City': City, 'Amenity': Amenity,
+           'Review': Review}
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
@@ -37,7 +42,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -113,41 +117,31 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    
-    def do_create(self, args):
+    def do_create(self, line):
         """ Create an object of any class"""
-        if not args:
+        tokens = shlex.split(line)
+
+        if not line or len(line) == 0:
             print("** class name missing **")
             return
-        list_arguments = args.split()
-        if list_arguments[0] not in HBNBCommand.classes:
+        if tokens[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        arg_dict = {}
-        if len(list_arguments) > 1:
-            for index, argu in enumerate(list_arguments):
-                if index > 0:
-                    x = re.search("^[a-zA-Z][\w]*=[\"]?(.*)[\"]?", argu)
-                    if not x:
-                        return
-                    else:
-                        key = argu.split("=")[0]
-                        value = argu.split("=")[1]
-                        if re.search("^[\"](.*[\"])?$", value):
-                            arg_dict[key] = value[1:-1].replace("_", " ")
-                        else:
-                            if "." in value:
-                                arg_dict[key] = float(value)
-                            else:
-                                try:
-                                    arg_dict[key] = int(value)
-                                except ValueError:
-                                    return
-        new_instance = HBNBCommand.classes[list_arguments[0]]()
-        new_instance.__dict__.update(arg_dict)
-        storage.new(new_instance)
-        storage.save()
-        print(new_instance.id)
+
+        if len(tokens) == 1:
+            new_instance = HBNBCommand.classes[line]()
+            new_instance.save()
+            print(new_instance.id)
+        if len(tokens) > 1:
+            new_instance = HBNBCommand.classes[tokens[0]]()
+            pieces = dict(i.split('=') for i in tokens[1:])
+            for k, v in pieces.items():
+                if '_' in v:
+                    v = v.replace('_', ' ')
+                if hasattr(new_instance, k):
+                    setattr(new_instance, k, v)
+            new_instance.save()
+            print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
@@ -222,21 +216,26 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
-        print_list = []
-
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
-        else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
-
-        print(print_list)
+        obj_list = []
+        storage = models.storage
+        storage.reload()
+        try:
+            if len(args) != 0:
+                eval(args)
+            if len(args) == 0:
+                objects = storage.all()
+            else:
+                objects = storage.all(args)
+        except NameError:
+            print("** class doesn't exist **")
+            return
+        for key, val in objects.items():
+            if len(args) != 0:
+                if type(val) is eval(args):
+                    obj_list.append(val)
+            else:
+                obj_list.append(val)
+        print(obj_list)
 
     def help_all(self):
         """ Help information for the all command """
