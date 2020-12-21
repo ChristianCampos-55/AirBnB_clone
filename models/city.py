@@ -7,11 +7,7 @@ from sqlalchemy.orm import relationship, backref
 
 
 class City(BaseModel, Base):
-    """ The city class, contains state ID and name
-    Attributes:
-        name: input name
-        state_id: input state id
-    """
+    """ The city class, contains state ID and"""
     __tablename__ = "cities"
 
     name = Column(String(128), nullable=False)
