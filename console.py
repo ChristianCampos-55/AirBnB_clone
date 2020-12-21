@@ -113,35 +113,41 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
+    
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-
-        split_args = args.split()
-
-        if split_args[0] not in HBNBCommand.classes:
+        list_arguments = args.split()
+        if list_arguments[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        args_list = {}
-
-        if len(split_args) > 1:
-            for arg in range(1, len(split_args)):
-                key, val = tuple(split_args[arg].split('='))
-                if val[0] == '"':
-                    val = val.strip('"').replace('_', ' ')
-                else:
-                    val = eval(val)
-
-            args_list[key] = val
-
-        new_obj = HBNBCommand.classes[split_args[0]]()
-        new_obj.__dict__.update(args_list)
-        storage.new(new_obj)
+        arg_dict = {}
+        if len(list_arguments) > 1:
+            for index, argu in enumerate(list_arguments):
+                if index > 0:
+                    x = re.search("^[a-zA-Z][\w]*=[\"]?(.*)[\"]?", argu)
+                    if not x:
+                        return
+                    else:
+                        key = argu.split("=")[0]
+                        value = argu.split("=")[1]
+                        if re.search("^[\"](.*[\"])?$", value):
+                            arg_dict[key] = value[1:-1].replace("_", " ")
+                        else:
+                            if "." in value:
+                                arg_dict[key] = float(value)
+                            else:
+                                try:
+                                    arg_dict[key] = int(value)
+                                except ValueError:
+                                    return
+        new_instance = HBNBCommand.classes[list_arguments[0]]()
+        new_instance.__dict__.update(arg_dict)
+        storage.new(new_instance)
         storage.save()
-        print(new_obj.id)
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
