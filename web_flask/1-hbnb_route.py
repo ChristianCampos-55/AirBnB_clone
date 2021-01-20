@@ -13,7 +13,7 @@ def hello_hbnb():
 @web_app.route('/hbnb', strict_slashes=False)
 def hbnb():
     """ Shows HBNB """
-    return 'HBNB!'
+    return 'HBNB'
 
 
 if __name__ == '__main__':
