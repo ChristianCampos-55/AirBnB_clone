@@ -29,7 +29,7 @@ def python_route(text='is cool'):
     return 'Python {}'.format(text.replace('_', ' '))
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
+@web_app.route('/number/<int:n>', strict_slashes=False)
 def is_number(n):
     """ Prints passed number """
     return '{:d} is a number'.format(n)
