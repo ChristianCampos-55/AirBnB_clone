@@ -16,8 +16,8 @@ def states_list():
 
 @web_app.teardown_appcontext
 def close_sess(exception):
-        """ Close current session """
-            storage.close()
+    """ Close current session """
+    storage.close()
 
 
 if __name__ == '__main__':
