@@ -35,7 +35,6 @@ def is_number(n):
     return '{:d} is a number'.format(n)
 
 
-
 @web_app.route('/number_template/<int:n>', strict_slashes=False)
 def number_template(n):
     """ Displays html if num is an integer """
