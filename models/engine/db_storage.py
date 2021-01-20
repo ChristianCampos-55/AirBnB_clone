@@ -9,7 +9,7 @@ from models.city import City
 from models.review import Review
 from models.user import User
 from models.place import Place
-from models.base_model import Base
+from models.base_model import Base, BaseModel
 
 
 class DBStorage():
@@ -84,3 +84,7 @@ class DBStorage():
         session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session)
         self.__session = Session()
+
+        def close(self):
+            """ Close and destroy current session """
+            self.__session.remove()
